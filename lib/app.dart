@@ -15,11 +15,16 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          sliderTheme: const SliderThemeData(
+              showValueIndicator: ShowValueIndicator.always)),
       home: BlocProvider(
         create: (context) {
           return HomeCubit(productsRepository)..getNextPage();
         },
-        child: const HomePage(),
+        child: HomePage(
+          id: '620',
+        ),
       ),
     );
   }
