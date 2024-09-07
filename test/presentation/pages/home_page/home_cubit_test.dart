@@ -40,7 +40,7 @@ void main() {
     );
   });
 
-  test('initial state', () {
+  test('expects proper initial state', () {
     expect(
       HomeCubit(productsRepository).state,
       Loading(
