@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_recruitment_task/constants/constants.dart';
 import 'package:flutter_recruitment_task/models/get_products_page.dart';
 import 'package:flutter_recruitment_task/models/get_products_page_filter.dart';
 import 'package:flutter_recruitment_task/models/products_page.dart';
@@ -64,7 +65,7 @@ List<ProductFunction> getFilters(GetProductsPageFilter productsPageFilter) {
   }
 
   if (productsPageFilter.maxPrice != null &&
-      productsPageFilter.maxPrice! < 5000) {
+      productsPageFilter.maxPrice! < maxPrice) {
     filters.add((product) =>
         product.offer.regularPrice.amount < productsPageFilter.maxPrice!);
   }

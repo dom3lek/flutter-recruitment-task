@@ -58,11 +58,11 @@ class _HomeFiltersModalBottomSheetState
           const SizedBox(height: 8),
           RangeSlider(
             values: RangeValues(minPrice, maxPrice),
-            min: 0,
-            max: 100,
+            min: minPrice,
+            max: maxPrice,
             divisions: 100,
             labels: RangeLabels(minPrice.toStringAsFixed(2),
-                maxPrice == 100 ? "100+" : maxPrice.toStringAsFixed(2)),
+                maxPrice == maxPrice ? "100+" : maxPrice.toStringAsFixed(2)),
             onChanged: (value) {
               setState(() {
                 minPrice = value.start;
