@@ -1,2 +1,2 @@
-const maxPrice = 100;
-const minPrice = 0;
+const maxPrice = 100.0;
+const minPrice = 0.0;

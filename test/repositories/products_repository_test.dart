@@ -19,7 +19,7 @@ void main() {
           selectedTags: ['VEGE'],
         );
 
-        final param = GetProductsPage(pageNumber: 1);
+        const param = GetProductsPage(pageNumber: 1);
 
         // act
         final data =
@@ -38,7 +38,7 @@ void main() {
         // arrange
         const productsPageFilter = GetProductsPageFilter();
 
-        final param = GetProductsPage(pageNumber: 1);
+        const param = GetProductsPage(pageNumber: 1);
 
         // act
         final data =
