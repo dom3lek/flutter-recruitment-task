@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_recruitment_task/constants/constants.dart';
 import 'package:flutter_recruitment_task/models/get_products_page_filter.dart';
-import 'package:flutter_recruitment_task/presentation/widgets/big_text.dart';
-
-const chipsToChoice = ['BIO', '%', 'VEGAN', 'VEGE', 'BEST'];
+import 'package:flutter_recruitment_task/presentation/widgets/favorite_filter.dart';
+import 'package:flutter_recruitment_task/presentation/widgets/price_range_filter.dart';
+import 'package:flutter_recruitment_task/presentation/widgets/tags_filter.dart';
 
 class HomeFiltersModalBottomSheet extends StatefulWidget {
   const HomeFiltersModalBottomSheet({
@@ -40,60 +40,32 @@ class _HomeFiltersModalBottomSheetState
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
         children: [
-          const BigText('Type filter'),
-          Wrap(
-            spacing: 10,
-            children: [
-              for (final chip in chipsToChoice)
-                ChoiceChip(
-                  label: Text(chip),
-                  selected: selectedTags.contains(chip),
-                  onSelected: (value) {
-                    onSelected(chip, value);
-                  },
-                ),
-            ],
+          TagsFilter(
+            onSelected: onSelected,
+            selectedTags: selectedTags,
           ),
           const SizedBox(height: 16),
-          const BigText('Price range filter'),
-          const SizedBox(height: 8),
-          RangeSlider(
-            values: RangeValues(tempMinPrice, tempMaxPrice),
-            min: tempMinPrice,
-            max: tempMaxPrice,
-            divisions: 100,
-            labels: RangeLabels(
-                tempMinPrice.toStringAsFixed(2),
-                tempMaxPrice == tempMaxPrice
-                    ? "100+"
-                    : tempMaxPrice.toStringAsFixed(2)),
-            onChanged: (value) {
-              setState(() {
-                tempMinPrice = value.start;
-                tempMaxPrice = value.end;
-              });
-            },
+          PriceRangeFilter(
+            onChanged: onPriceChanged,
+            tempMinPrice: tempMinPrice,
+            tempMaxPrice: tempMaxPrice,
           ),
           const SizedBox(height: 16),
-          CheckboxListTile(
-            value: isFavorites,
-            onChanged: (value) {
-              setState(() {
-                isFavorites = value ?? false;
-              });
-            },
-            title: const Text('Show only favorites?'),
+          FavoritesFilter(
+            onIsFavoritesChanged: onIsFavoritesChanged,
+            isFavorites: isFavorites,
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(
-                  context,
-                  GetProductsPageFilter(
-                    minPrice: tempMinPrice,
-                    maxPrice: tempMaxPrice,
-                    selectedTags: selectedTags,
-                    isFavorites: isFavorites,
-                  ));
+                context,
+                GetProductsPageFilter(
+                  minPrice: tempMinPrice,
+                  maxPrice: tempMaxPrice,
+                  selectedTags: selectedTags,
+                  isFavorites: isFavorites,
+                ),
+              );
             },
             child: const Text('Apply'),
           ),
@@ -110,5 +82,20 @@ class _HomeFiltersModalBottomSheetState
         selectedTags.remove(text);
       }
     });
+  }
+
+  void onPriceChanged(double min, double max) {
+    setState(() {
+      tempMinPrice = min;
+      tempMaxPrice = max;
+    });
+  }
+
+  void onIsFavoritesChanged(bool? value) {
+    if (value != null) {
+      setState(() {
+        isFavorites = value;
+      });
+    }
   }
 }

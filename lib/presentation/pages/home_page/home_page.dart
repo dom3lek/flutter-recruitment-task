@@ -22,29 +22,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const BigText('Products'),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              final state = context.read<HomeCubit>().state;
-
-              final getProductsPageFilter =
-                  await showModalBottomSheet<GetProductsPageFilter>(
-                context: context,
-                builder: (ctx) => SizedBox.expand(
-                  child: HomeFiltersModalBottomSheet(
-                      getProductsPageFilter: state.getProductsPageFilter),
-                ),
-              );
-
-              if (context.mounted &&
-                  getProductsPageFilter != state.getProductsPageFilter &&
-                  getProductsPageFilter != null) {
-                context.read<HomeCubit>().getNextPage(getProductsPageFilter);
-              }
-            },
-            icon: const Icon(Icons.filter_alt),
-          ),
-        ],
+        actions: const [_OpenFilterModalButton()],
       ),
       body: Padding(
         padding: _mainPadding,
@@ -63,8 +41,7 @@ class HomePage extends StatelessWidget {
                     index: index,
                     scrollController: _scrollController,
                     alignment: 0.5,
-                    duration: (estimatedDistance) =>
-                        const Duration(milliseconds: 250),
+                    duration: (estimatedDistance) => kThemeAnimationDuration,
                     curve: (estimatedDistance) => Curves.easeInOut,
                   );
                 });
@@ -85,6 +62,36 @@ class HomePage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+class _OpenFilterModalButton extends StatelessWidget {
+  const _OpenFilterModalButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () async {
+        final getProductsPageFilter =
+            context.read<HomeCubit>().state.getProductsPageFilter;
+
+        final newGetProductsPageFilter =
+            await showModalBottomSheet<GetProductsPageFilter>(
+          context: context,
+          builder: (ctx) => SizedBox.expand(
+            child: HomeFiltersModalBottomSheet(
+                getProductsPageFilter: getProductsPageFilter),
+          ),
+        );
+
+        if (context.mounted &&
+            newGetProductsPageFilter != getProductsPageFilter &&
+            newGetProductsPageFilter != null) {
+          context.read<HomeCubit>().getNextPage(newGetProductsPageFilter);
+        }
+      },
+      icon: const Icon(Icons.filter_alt),
     );
   }
 }
@@ -155,13 +162,35 @@ class _ProductCard extends StatelessWidget {
             BigText(product.name),
             _Tags(product: product),
             // These widgets are to show that filtering works on UI based price and/or favorite
-            if (product.isFavorite ?? false) const Icon(Icons.star),
-            Text(
-                '${product.offer.regularPrice.amount.toStringAsFixed(2)} ${product.offer.regularPrice.currency}'),
+            if (product.isFavorite ?? false) const _Favorite(),
+            _Price(product: product),
           ],
         ),
       ),
     );
+  }
+}
+
+class _Price extends StatelessWidget {
+  const _Price({
+    required this.product,
+  });
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+        '${product.offer.regularPrice.amount.toStringAsFixed(2)} ${product.offer.regularPrice.currency}');
+  }
+}
+
+class _Favorite extends StatelessWidget {
+  const _Favorite();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(Icons.star);
   }
 }
 
@@ -190,7 +219,7 @@ class _TagWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Chip(
-        color: MaterialStateProperty.all(fromHex(tag.color)),
+        color: MaterialStateProperty.all(tag.color.toColor()),
         label: Text(tag.label),
       ),
     );
@@ -213,12 +242,14 @@ class _GetNextPageButton extends StatelessWidget {
   }
 }
 
-Color fromHex(String hex) {
-  String color = hex.replaceFirst("#", '');
+extension _ColorExt on String {
+  Color toColor() {
+    String color = replaceFirst("#", '');
 
-  if (color.length == 6 || color.length == 7) {
-    color = 'FF$color';
+    if (color.length == 6 || color.length == 7) {
+      color = 'FF$color';
+    }
+
+    return Color(int.parse(color, radix: 16));
   }
-
-  return Color(int.parse(color, radix: 16));
 }
